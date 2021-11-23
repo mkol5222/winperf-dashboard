@@ -74,6 +74,6 @@ function convertPerfCsv($csvFilename) {
         ConvertFrom-PerformanceCounterCsvObject $_ | Group-Object host, object, instance, ts
     } | ForEach-Object { 
         $fieldSet = ($_.Group | ForEach-Object { "$(mapFieldName $_.field)=$($_.value)" }) -join "," 
-        "win_proc,host=$($_.Group[0].host),instance=$(normalizeInstance($_.Group[0].instance)),object=$($_.Group[0].object) $($fieldSet) $($_.Group[0].ts)"
+        "win_proc,host=$($_.Group[0].host),instance=$(normalizeInstance($_.Group[0].instance)),objectname=$($_.Group[0].object) $($fieldSet) $(($_.Group[0].ts))000000000"
     }
 }
