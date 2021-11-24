@@ -77,3 +77,32 @@ function convertPerfCsv($csvFilename) {
         "win_proc,host=$($_.Group[0].host),instance=$(normalizeInstance($_.Group[0].instance)),objectname=$($_.Group[0].object) $($fieldSet) $(($_.Group[0].ts))000000000"
     }
 }
+
+function importLineFile($filename) {
+    $template = @"
+[[outputs.influxdb]]
+  urls = ["http://localhost:8086"]
+  database = "telegraf"
+  username = "telegraf"
+  password = ""
+
+[[inputs.tail]]
+  files = ["$filename"]
+  from_beginning = true
+  data_format = "influx"
+"@
+    $tmpConfig = New-TemporaryFile
+    $template | Out-File $tmpConfig
+
+    Write-Host "using telegraf config $tmpConfig"
+    & telegraf --debug --config $tmpConfig
+}
+
+function importCsvFile($filename) {
+    $tmpLineFile = New-TemporaryFile
+    Write-Host "Exporting CSV to line file $tmpLineFile"
+    convertPerfCsv $filename | Out-File $tmpLineFile
+    Write-Host "Importing line file $tmpLineFile"
+    importLineFile $tmpLineFile
+}
+
