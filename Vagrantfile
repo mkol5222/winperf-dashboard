@@ -35,6 +35,8 @@ Vagrant.configure("2") do |config|
                 source /etc/os-release
                 echo "deb https://repos.influxdata.com/${ID} ${VERSION_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
                 sudo apt-get update && sudo apt-get install telegraf
+                sudo apt-get install snap snapd -y
+                sudo snap install powershell --classic
             SHELL
         end
     end
